@@ -4,9 +4,12 @@
 #include <wx/frame.h>
 
 #include "jlstabbededitor.h"
+#include "jlspreferences.h"
 
 class jlsFrame : public wxFrame
 {
+	friend class jlsPreferences;
+
 public:
 	jlsFrame();
 	~jlsFrame();
@@ -21,8 +24,11 @@ public:
 	void OnFileSaveAll(wxCommandEvent &event);
 	void OnFileClose(wxCommandEvent &event);
 
+	void OnPreferences(wxCommandEvent &event);
+
 private:
 	jlsTabbedEditor *m_tabbedEditor;
+	wxString m_juliaPath;
 
 	void CreateMenu();
 
