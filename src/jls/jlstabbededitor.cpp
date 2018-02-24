@@ -54,7 +54,7 @@ void jlsTabbedEditor::SaveAll()
 const wxString jlsTabbedEditor::GetNextTempFilename()
 {
 	int nextTempFilenameNum = 0;
-	for (int i = 0; i < GetPageCount(); ++i) {
+	for (size_t i = 0; i < GetPageCount(); ++i) {
 		jlsEditor *e = static_cast<jlsEditor*>(GetPage(i));
 		if (e->HasTempFilename()) {
 			wxString filename = e->GetFilename();
