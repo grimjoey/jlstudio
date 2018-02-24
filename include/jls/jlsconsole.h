@@ -12,6 +12,7 @@ public:
 	~jlsConsole();
 
 	bool CanExecute() const;
+	bool IsRunning() const;
 	void Execute(const wxString &command);
 
 private:

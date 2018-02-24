@@ -3,8 +3,9 @@
 
 #include <wx/frame.h>
 
-#include "jlstabbededitor.h"
-#include "jlspreferences.h"
+#include "jls/jlstabbededitor.h"
+#include "jls/jlspreferences.h"
+#include "jls/jlsconsole.h"
 
 class jlsFrame : public wxFrame
 {
@@ -13,6 +14,8 @@ class jlsFrame : public wxFrame
 public:
 	jlsFrame();
 	~jlsFrame();
+
+	const jlsConsole *GetConsole() const;
 
 	void OnExit(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
@@ -28,6 +31,7 @@ public:
 
 private:
 	jlsTabbedEditor *m_tabbedEditor;
+	jlsConsole *m_console;
 	wxString m_juliaPath;
 
 	void CreateMenu();

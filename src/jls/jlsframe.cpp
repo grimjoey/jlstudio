@@ -30,7 +30,7 @@ wxEND_EVENT_TABLE()
 
 jlsFrame::jlsFrame()
 	: wxFrame(NULL, wxID_ANY, "JLStudio", wxDefaultPosition, wxSize(800, 600)),
-	m_juliaPath("C:\\Users\\grimjoey\\appdata\\local\\Julia-0.6.2\\bin\\julia.exe")
+	m_juliaPath("wrong path")
 {
 	CreateMenu();
 
@@ -39,14 +39,20 @@ jlsFrame::jlsFrame()
 
 	m_tabbedEditor = new jlsTabbedEditor(splitter, wxID_ANY);
 
-	jlsConsole *console = new jlsConsole(splitter);
-	console->Execute(m_juliaPath);
+	m_console = new jlsConsole(splitter);
+	if (wxFileExists(m_juliaPath))
+		m_console->Execute(m_juliaPath);
 
-	splitter->SplitVertically(m_tabbedEditor, console);
+	splitter->SplitVertically(m_tabbedEditor, m_console);
 	splitter->SetSashGravity(0.5);
 }
 
 jlsFrame::~jlsFrame() {}
+
+const jlsConsole *jlsFrame::GetConsole() const
+{
+	return m_console;
+}
 
 void jlsFrame::CreateMenu()
 {
@@ -96,19 +102,22 @@ void jlsFrame::OnFileOpen(wxCommandEvent &event)
 
 void jlsFrame::OnFileSave(wxCommandEvent &event)
 {
+	wxMessageBox("Saving is not implemented yet");
 }
 
 void jlsFrame::OnFileSaveAs(wxCommandEvent &event)
 {
+	wxMessageBox("Saving is not implemented yet");
 }
 
 void jlsFrame::OnFileSaveAll(wxCommandEvent &event)
 {
+	wxMessageBox("Saving is not implemented yet");
 }
 
 void jlsFrame::OnFileClose(wxCommandEvent &event)
 {
-	// TODO(joare): Ask for comfirmation if editor has unsaved changes.
+	// TODO(joare): Ask for confirmation if editor has unsaved changes.
 
 	wxWindow *currentPage = m_tabbedEditor->GetCurrentPage();
 	int currentPageIndex = m_tabbedEditor->GetPageIndex(currentPage);

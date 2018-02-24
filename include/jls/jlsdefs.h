@@ -11,7 +11,8 @@ enum {
 	jlsID_SAVEALL,
 	jlsID_CONSOLE,
 	jlsID_CONSOLE_PROCESS,
-	jlsID_CONSOLE_TIMER
+	jlsID_CONSOLE_TIMER,
+	jlsID_PREFS_START_JL
 };
 
 #endif // _JLSDEFS_H_

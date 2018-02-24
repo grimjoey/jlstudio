@@ -38,17 +38,25 @@ bool jlsConsole::CanExecute() const
 	return m_process == nullptr;
 }
 
+bool jlsConsole::IsRunning() const
+{
+	return m_running;
+}
+
 void jlsConsole::Execute(const wxString &command)
 {
 	if (CanExecute()) {
 		m_process = new wxProcess(this, jlsID_CONSOLE_PROCESS);
 		m_process->Redirect();
 		m_pid = wxExecute(command, wxEXEC_ASYNC, m_process);
+
 		if (m_pid == 0) {
 			delete m_process;
 			m_process = nullptr;
 		}
-		m_running = true;
+		else {
+			m_running = true;
+		}
 	}
 }
 
