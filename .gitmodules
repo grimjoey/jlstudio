@@ -1,0 +1,3 @@
+[submodule "wx"]
+	path = src/wx
+	url = https://github.com/grimjoey/wxWidgets
