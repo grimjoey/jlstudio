@@ -3,15 +3,29 @@
 
 #include <wx/frame.h>
 
+#include "jlstabbededitor.h"
+
 class jlsFrame : public wxFrame
 {
 public:
 	jlsFrame();
 	~jlsFrame();
 
-private:
 	void OnExit(wxCommandEvent &event);
 	void OnClose(wxCloseEvent &event);
+
+	void OnFileNew(wxCommandEvent &event);
+	void OnFileOpen(wxCommandEvent &event);
+	void OnFileSave(wxCommandEvent &event);
+	void OnFileSaveAs(wxCommandEvent &event);
+	void OnFileSaveAll(wxCommandEvent &event);
+	void OnFileClose(wxCommandEvent &event);
+
+private:
+	jlsTabbedEditor *m_editor;
+
+	void CreateMenu();
+
 	wxDECLARE_EVENT_TABLE();
 };
 

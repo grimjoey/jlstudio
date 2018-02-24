@@ -8,6 +8,7 @@
 
 enum {
 	jlsID_NOT_USED = wxID_HIGHEST,
+	jlsID_SAVEALL,
 	jlsID_CONSOLE,
 	jlsID_CONSOLE_PROCESS,
 	jlsID_CONSOLE_TIMER
