@@ -7,7 +7,9 @@
 #include "jls/jlseditor.h"
 
 jlsTabbedEditor::jlsTabbedEditor(wxWindow *parent, wxWindowID id)
-	: wxAuiNotebook(parent, id)
+	: wxAuiNotebook(parent, id, wxDefaultPosition, wxDefaultSize,
+		wxAUI_NB_DEFAULT_STYLE | wxAUI_NB_TAB_SPLIT | wxAUI_NB_TAB_MOVE
+		| wxAUI_NB_TAB_FIXED_WIDTH | wxAUI_NB_CLOSE_ON_ALL_TABS)
 {
 	NewFile();
 }
@@ -17,7 +19,7 @@ jlsTabbedEditor::~jlsTabbedEditor() {}
 void jlsTabbedEditor::NewFile()
 {
 	wxString filename = GetNextTempFilename();
-	AddPage(new jlsEditor(this, wxID_ANY, filename), filename);
+	AddPage(new jlsEditor(this, wxID_ANY, filename), filename, true);
 }
 
 bool jlsTabbedEditor::LoadFile()

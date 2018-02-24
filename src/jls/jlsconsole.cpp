@@ -21,6 +21,8 @@ jlsConsole::jlsConsole(wxWindow *parent)
 		wxTE_PROCESS_ENTER | wxTE_MULTILINE | wxTE_RICH2),
 	m_pollProcessOutputTimer(this, jlsID_CONSOLE_TIMER)
 {
+	wxFont font(wxFontInfo(10).Family(wxFONTFAMILY_MODERN));
+	SetFont(font);
 }
 
 jlsConsole::~jlsConsole() {

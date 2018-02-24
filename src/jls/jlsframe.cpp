@@ -32,12 +32,12 @@ jlsFrame::jlsFrame()
 	wxSplitterWindow *splitter = new wxSplitterWindow(this, wxID_ANY);
 	splitter->SetWindowStyleFlag(wxSP_LIVE_UPDATE);
 
-	m_editor = new jlsTabbedEditor(splitter, wxID_ANY);
+	m_tabbedEditor = new jlsTabbedEditor(splitter, wxID_ANY);
 
 	jlsConsole *console = new jlsConsole(splitter);
 	console->Execute("C:\\Users\\grimjoey\\appdata\\local\\Julia-0.6.2\\bin\\julia.exe");
 
-	splitter->SplitVertically(m_editor, console);
+	splitter->SplitVertically(m_tabbedEditor, console);
 	splitter->SetSashGravity(0.5);
 
 	Bind(wxEVT_MENU, &jlsFrame::OnExit, this, wxID_EXIT);
@@ -79,12 +79,12 @@ void jlsFrame::OnClose(wxCloseEvent &event)
 
 void jlsFrame::OnFileNew(wxCommandEvent &event)
 {
-	m_editor->NewFile();
+	m_tabbedEditor->NewFile();
 }
 
 void jlsFrame::OnFileOpen(wxCommandEvent &event)
 {
-	m_editor->LoadFile();
+	m_tabbedEditor->LoadFile();
 }
 
 void jlsFrame::OnFileSave(wxCommandEvent &event)
@@ -101,4 +101,9 @@ void jlsFrame::OnFileSaveAll(wxCommandEvent &event)
 
 void jlsFrame::OnFileClose(wxCommandEvent &event)
 {
+	// TODO(joare): ask for comfirmation if editor has unsaved changes
+
+	wxWindow *currentPage = m_tabbedEditor->GetCurrentPage();
+	int currentPageIndex = m_tabbedEditor->GetPageIndex(currentPage);
+	m_tabbedEditor->DeletePage(currentPageIndex);
 }

@@ -22,7 +22,7 @@ public:
 	void OnFileClose(wxCommandEvent &event);
 
 private:
-	jlsTabbedEditor *m_editor;
+	jlsTabbedEditor *m_tabbedEditor;
 
 	void CreateMenu();
 
