@@ -1,9 +1,9 @@
 #ifndef _JLSTABBEDEDITOR_H_
 #define _JLSTABBEDEDITOR_H_
 
-#include <wx/notebook.h>
+#include <wx/aui/auibook.h>
 
-class jlsTabbedEditor : public wxNotebook
+class jlsTabbedEditor : public wxAuiNotebook
 {
 public:
 	jlsTabbedEditor(wxWindow *parent, wxWindowID id);

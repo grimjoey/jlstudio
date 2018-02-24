@@ -7,7 +7,7 @@
 #include "jls/jlseditor.h"
 
 jlsTabbedEditor::jlsTabbedEditor(wxWindow *parent, wxWindowID id)
-	: wxNotebook(parent, id)
+	: wxAuiNotebook(parent, id)
 {
 	NewFile();
 }
