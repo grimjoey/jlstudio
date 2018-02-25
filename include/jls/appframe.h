@@ -1,5 +1,5 @@
-#ifndef _JLSFRAME_H_
-#define _JLSFRAME_H_
+#ifndef _JLSAPPRAME_H_
+#define _JLSAPPRAME_H_
 
 #include <wx/frame.h>
 
@@ -41,4 +41,4 @@ private:
 	wxDECLARE_EVENT_TABLE();
 };
 
-#endif // _JLSFRAME_H_
+#endif // _JLSAPPRAME_H_
