@@ -12,7 +12,8 @@ enum {
 	jlsID_CONSOLE,
 	jlsID_CONSOLE_PROCESS,
 	jlsID_CONSOLE_TIMER,
-	jlsID_PREFS_START_JL
+	jlsID_PREFS_START_JL,
+	jlsID_MENURUN_RUN
 };
 
 #endif // _JLSDEFS_H_

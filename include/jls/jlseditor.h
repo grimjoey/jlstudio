@@ -9,11 +9,15 @@ public:
 	jlsEditor(wxWindow *parent, wxWindowID id, const wxString filename);
 	~jlsEditor();
 
+	bool LoadFile(const wxString &filename);
+
 	const wxString GetFilename();
 	bool HasTempFilename();
 
 private:
 	wxString m_filename;
+
+	void OnChange(wxStyledTextEvent &event);
 };
 
 #endif // _JLSEDITOR_H_

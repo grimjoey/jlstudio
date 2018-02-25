@@ -29,6 +29,8 @@ public:
 
 	void OnPreferences(wxCommandEvent &event);
 
+	void OnRun(wxCommandEvent &event);
+
 private:
 	jlsTabbedEditor *m_tabbedEditor;
 	jlsConsole *m_console;

@@ -9,6 +9,7 @@
 
 #include "jls/jlsdefs.h"
 #include "jls/jlsframe.h"
+#include "jls/jlseditor.h"
 #include "jls/jlstabbededitor.h"
 #include "jls/jlsconsole.h"
 
@@ -26,11 +27,14 @@ wxBEGIN_EVENT_TABLE(jlsFrame, wxFrame)
 
 	// tools
 	EVT_MENU(wxID_PREFERENCES, jlsFrame::OnPreferences)
+
+	// run
+	EVT_MENU(jlsID_MENURUN_RUN, jlsFrame::OnRun)
 wxEND_EVENT_TABLE()
 
 jlsFrame::jlsFrame()
 	: wxFrame(NULL, wxID_ANY, "JLStudio", wxDefaultPosition, wxSize(800, 600)),
-	m_juliaPath("wrong path")
+	m_juliaPath("C:\\windows\\system32\\cmd.exe")// /K C:\\users\\grimjoey\\appdata\\local\\julia-0.6.2\\bin\\julia.exe")
 {
 	CreateMenu();
 
@@ -68,11 +72,15 @@ void jlsFrame::CreateMenu()
 	menuFile->AppendSeparator();
 	menuFile->Append(wxID_EXIT);
 
+	wxMenu *menuRun = new wxMenu;
+	menuRun->Append(jlsID_MENURUN_RUN, _("Run"));
+
 	wxMenu *menuTools = new wxMenu;
 	menuTools->Append(wxID_PREFERENCES, _("Preferences"));
 
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile, _("&File"));
+	menuBar->Append(menuRun, _("Run"));
 	menuBar->Append(menuTools, _("Tools"));
 
 	SetMenuBar(menuBar);
@@ -128,4 +136,13 @@ void jlsFrame::OnPreferences(wxCommandEvent &event)
 {
 	jlsPreferences prefs(this, wxID_ANY);
 	prefs.ShowModal();
+}
+
+void jlsFrame::OnRun(wxCommandEvent &event)
+{
+	jlsEditor *currentEditor = static_cast<jlsEditor*>(m_tabbedEditor->GetCurrentPage());
+	wxString filename(currentEditor->GetFilename());
+	filename.Replace("\\", "\\\\");
+	m_console->AppendText(wxString::Format("include(\"%s\")", filename));
+	m_console->EmulateKeyPress(CreateKeyEvent(wxEVT_KEY_DOWN, WXK_RETURN));
 }

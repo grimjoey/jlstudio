@@ -11,9 +11,21 @@ jlsEditor::jlsEditor(wxWindow *parent, wxWindowID id, const wxString filename)
 {
 	wxFont font(wxFontInfo(10).Family(wxFONTFAMILY_MODERN));
 	StyleSetFont(0, font);
+
+	Bind(wxEVT_STC_CHANGE, &jlsEditor::OnChange, this);
 }
 
 jlsEditor::~jlsEditor() {}
+
+bool jlsEditor::LoadFile(const wxString &filename)
+{
+	// Load the actual file.
+	bool result = wxStyledTextCtrl::LoadFile(filename);
+
+	// TODO(joare): Keep track of long lines, and adjust scrollwidth.
+
+	return result;
+}
 
 const wxString jlsEditor::GetFilename()
 {
@@ -23,4 +35,8 @@ const wxString jlsEditor::GetFilename()
 bool jlsEditor::HasTempFilename()
 {
 	return !wxFileExists(m_filename);
+}
+
+void jlsEditor::OnChange(wxStyledTextEvent &event)
+{
 }
