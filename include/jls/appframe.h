@@ -3,17 +3,17 @@
 
 #include <wx/frame.h>
 
-#include "jls/jlstabbededitor.h"
-#include "jls/jlspreferences.h"
-#include "jls/jlsconsole.h"
+#include "jls/tabbededitor.h"
+#include "jls/preferences.h"
+#include "jls/console.h"
 
-class jlsFrame : public wxFrame
+class jlsAppFrame : public wxFrame
 {
 	friend class jlsPreferences;
 
 public:
-	jlsFrame();
-	~jlsFrame();
+	jlsAppFrame();
+	~jlsAppFrame();
 
 	const jlsConsole *GetConsole() const;
 

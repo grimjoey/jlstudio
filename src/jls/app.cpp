@@ -3,14 +3,14 @@
 #include <wx/wx.h>
 #endif // WX_PRECOMP
 
-#include "jls/jlsapp.h"
-#include "jls/jlsframe.h"
+#include "jls/app.h"
+#include "jls/appframe.h"
 
 wxIMPLEMENT_APP(jlsApp);
 
 bool jlsApp::OnInit()
 {
-	jlsFrame *frame = new jlsFrame();
+	jlsAppFrame *frame = new jlsAppFrame();
 	frame->Show(true);
 	return true;
 }

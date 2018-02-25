@@ -3,17 +3,17 @@
 #include <wx/wx.h>
 #endif // WX_PRECOMP
 
-#include "jls/jlsdefs.h"
-#include "jls/jlspreferences.h"
-#include "jls/jlsframe.h"
-#include "jls/jlsconsole.h"
+#include "jls/defs.h"
+#include "jls/preferences.h"
+#include "jls/appframe.h"
+#include "jls/console.h"
 
 jlsPreferences::jlsPreferences(wxWindow *parent, wxWindowID id)
 	: wxDialog(parent, id, _("Preferences"))
 {
 	// TODO(joare): Avoid circular dependency.
 	
-	wxString juliaPath = static_cast<jlsFrame*>(parent)->m_juliaPath;
+	wxString juliaPath = static_cast<jlsAppFrame*>(parent)->m_juliaPath;
 
 	m_juliaPathControl = new wxTextCtrl(this, wxID_ANY, juliaPath, wxDefaultPosition, wxSize(200, wxDefaultCoord));
 
@@ -35,7 +35,7 @@ void jlsPreferences::OnStartJulia(wxCommandEvent &event)
 {
 	// TODO(joare): Avoid circular dependency.
 	
-	jlsFrame *p = static_cast<jlsFrame*>(GetParent());
+	jlsAppFrame *p = static_cast<jlsAppFrame*>(GetParent());
 	p->m_juliaPath = m_juliaPathControl->GetValue();
 	if (wxFileExists(p->m_juliaPath))
 		p->m_console->Execute(p->m_juliaPath);

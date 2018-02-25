@@ -3,8 +3,8 @@
 #include <wx/wx.h>
 #endif // WX_PRECOMP
 
-#include "jls/jlstabbededitor.h"
-#include "jls/jlseditor.h"
+#include "jls/tabbededitor.h"
+#include "jls/editor.h"
 
 jlsTabbedEditor::jlsTabbedEditor(wxWindow *parent, wxWindowID id)
 	: wxAuiNotebook(parent, id, wxDefaultPosition, wxDefaultSize,

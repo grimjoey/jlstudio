@@ -3,7 +3,7 @@
 #include <wx/wx.h>
 #endif // WX_PRECOMP
 
-#include "jls/jlseditor.h"
+#include "jls/editor.h"
 
 jlsEditor::jlsEditor(wxWindow *parent, wxWindowID id, const wxString filename)
 	: wxStyledTextCtrl(parent, id),

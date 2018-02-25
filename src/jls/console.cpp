@@ -6,8 +6,8 @@
 #include <wx/process.h>
 #include <wx/txtstrm.h>
 
-#include "jls/jlsdefs.h"
-#include "jls/jlsconsole.h"
+#include "jls/defs.h"
+#include "jls/console.h"
 
 wxBEGIN_EVENT_TABLE(jlsConsole, wxTextCtrl)
 	EVT_TIMER(jlsID_CONSOLE_TIMER, jlsConsole::OnTimer)
@@ -26,11 +26,6 @@ jlsConsole::jlsConsole(wxWindow *parent)
 }
 
 jlsConsole::~jlsConsole() {
-	if (m_process != nullptr) {
-		if (m_running && m_pid)
-			m_process->Kill(m_pid);
-		delete m_process;
-	}
 }
 
 bool jlsConsole::CanExecute() const

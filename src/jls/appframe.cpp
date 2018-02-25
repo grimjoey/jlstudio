@@ -7,32 +7,32 @@
 #include <wx/notebook.h>
 #include <wx/stc/stc.h>
 
-#include "jls/jlsdefs.h"
-#include "jls/jlsframe.h"
-#include "jls/jlseditor.h"
-#include "jls/jlstabbededitor.h"
-#include "jls/jlsconsole.h"
+#include "jls/defs.h"
+#include "jls/appframe.h"
+#include "jls/editor.h"
+#include "jls/tabbededitor.h"
+#include "jls/console.h"
 
-wxBEGIN_EVENT_TABLE(jlsFrame, wxFrame)
-	EVT_CLOSE(jlsFrame::OnClose)
+wxBEGIN_EVENT_TABLE(jlsAppFrame, wxFrame)
+	EVT_CLOSE(jlsAppFrame::OnClose)
 
 	// file
-	EVT_MENU(wxID_NEW, jlsFrame::OnFileNew)
-	EVT_MENU(wxID_OPEN, jlsFrame::OnFileOpen)
-	EVT_MENU(wxID_SAVE, jlsFrame::OnFileSave)
-	EVT_MENU(wxID_SAVEAS, jlsFrame::OnFileSaveAs)
-	EVT_MENU(jlsID_SAVEALL, jlsFrame::OnFileSaveAll)
-	EVT_MENU(wxID_CLOSE, jlsFrame::OnFileClose)
-	EVT_MENU(wxID_EXIT, jlsFrame::OnExit)
+	EVT_MENU(wxID_NEW, jlsAppFrame::OnFileNew)
+	EVT_MENU(wxID_OPEN, jlsAppFrame::OnFileOpen)
+	EVT_MENU(wxID_SAVE, jlsAppFrame::OnFileSave)
+	EVT_MENU(wxID_SAVEAS, jlsAppFrame::OnFileSaveAs)
+	EVT_MENU(jlsID_SAVEALL, jlsAppFrame::OnFileSaveAll)
+	EVT_MENU(wxID_CLOSE, jlsAppFrame::OnFileClose)
+	EVT_MENU(wxID_EXIT, jlsAppFrame::OnExit)
 
 	// tools
-	EVT_MENU(wxID_PREFERENCES, jlsFrame::OnPreferences)
+	EVT_MENU(wxID_PREFERENCES, jlsAppFrame::OnPreferences)
 
 	// run
-	EVT_MENU(jlsID_MENURUN_RUN, jlsFrame::OnRun)
+	EVT_MENU(jlsID_MENURUN_RUN, jlsAppFrame::OnRun)
 wxEND_EVENT_TABLE()
 
-jlsFrame::jlsFrame()
+jlsAppFrame::jlsAppFrame()
 	: wxFrame(NULL, wxID_ANY, "JLStudio", wxDefaultPosition, wxSize(800, 600)),
 	m_juliaPath("C:\\windows\\system32\\cmd.exe")// /K C:\\users\\grimjoey\\appdata\\local\\julia-0.6.2\\bin\\julia.exe")
 {
@@ -51,14 +51,14 @@ jlsFrame::jlsFrame()
 	splitter->SetSashGravity(0.5);
 }
 
-jlsFrame::~jlsFrame() {}
+jlsAppFrame::~jlsAppFrame() {}
 
-const jlsConsole *jlsFrame::GetConsole() const
+const jlsConsole *jlsAppFrame::GetConsole() const
 {
 	return m_console;
 }
 
-void jlsFrame::CreateMenu()
+void jlsAppFrame::CreateMenu()
 {
 	wxMenu *menuFile = new wxMenu;
 	menuFile->Append(wxID_NEW, _("&New\tCtrl+N"));
@@ -86,44 +86,44 @@ void jlsFrame::CreateMenu()
 	SetMenuBar(menuBar);
 }
 
-void jlsFrame::OnExit(wxCommandEvent &event)
+void jlsAppFrame::OnExit(wxCommandEvent &event)
 {
 	Close(true);
 }
 
-void jlsFrame::OnClose(wxCloseEvent &event)
+void jlsAppFrame::OnClose(wxCloseEvent &event)
 {
 	// Hide cleanup delay
 	Hide();
 	event.Skip();
 }
 
-void jlsFrame::OnFileNew(wxCommandEvent &event)
+void jlsAppFrame::OnFileNew(wxCommandEvent &event)
 {
 	m_tabbedEditor->NewFile();
 }
 
-void jlsFrame::OnFileOpen(wxCommandEvent &event)
+void jlsAppFrame::OnFileOpen(wxCommandEvent &event)
 {
 	m_tabbedEditor->LoadFile();
 }
 
-void jlsFrame::OnFileSave(wxCommandEvent &event)
+void jlsAppFrame::OnFileSave(wxCommandEvent &event)
 {
 	wxMessageBox("Saving is not implemented yet");
 }
 
-void jlsFrame::OnFileSaveAs(wxCommandEvent &event)
+void jlsAppFrame::OnFileSaveAs(wxCommandEvent &event)
 {
 	wxMessageBox("Saving is not implemented yet");
 }
 
-void jlsFrame::OnFileSaveAll(wxCommandEvent &event)
+void jlsAppFrame::OnFileSaveAll(wxCommandEvent &event)
 {
 	wxMessageBox("Saving is not implemented yet");
 }
 
-void jlsFrame::OnFileClose(wxCommandEvent &event)
+void jlsAppFrame::OnFileClose(wxCommandEvent &event)
 {
 	// TODO(joare): Ask for confirmation if editor has unsaved changes.
 
@@ -132,13 +132,13 @@ void jlsFrame::OnFileClose(wxCommandEvent &event)
 	m_tabbedEditor->DeletePage(currentPageIndex);
 }
 
-void jlsFrame::OnPreferences(wxCommandEvent &event)
+void jlsAppFrame::OnPreferences(wxCommandEvent &event)
 {
 	jlsPreferences prefs(this, wxID_ANY);
 	prefs.ShowModal();
 }
 
-void jlsFrame::OnRun(wxCommandEvent &event)
+void jlsAppFrame::OnRun(wxCommandEvent &event)
 {
 	jlsEditor *currentEditor = static_cast<jlsEditor*>(m_tabbedEditor->GetCurrentPage());
 	wxString filename(currentEditor->GetFilename());
