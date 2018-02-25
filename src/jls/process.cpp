@@ -7,46 +7,79 @@
 
 #include "jls/process.h"
 
-#define PIPE_NAME_MAX 256
+jlsProcess::jlsProcess(jlsProcessCb out, jlsProcessCb err, void *receiver)
+	: m_cb_out(out), m_cb_err(err),
+	m_remote_io(INVALID_HANDLE_VALUE),
+	m_remote_err(INVALID_HANDLE_VALUE),
+	m_handles{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE}
+{
+	ZeroMemory(&m_readStdoutOverlapped, sizeof(m_readStdoutOverlapped));
+	m_readStdoutOverlapped.process = this;
 
-jlsProcess::jlsProcess() {}
+	ZeroMemory(&m_readStderrOverlapped, sizeof(m_readStderrOverlapped));
+	m_readStderrOverlapped.process = this;
+
+	// Idea(joare): Pass receiver directly to windows through jlsIO.
+}
 
 jlsProcess::~jlsProcess() {
-	// TODO: kill process
+	// TODO(joare): Test and review.
 
 	TerminateHandle(&m_remote_io);
 	TerminateHandle(&m_remote_err);
-	TerminateHandle(&m_io);
-	TerminateHandle(&m_err);
+	TerminateHandle(&m_handles[IO]);
+	TerminateHandle(&m_handles[ERR]);
+
+	TerminateProcess(m_procInfo.hProcess, 1);
 }
 
-bool jlsProcess::Execute(LPTSTR cmd)
+bool jlsProcess::Execute(TCHAR *cmd)
 {
 	m_cmd = cmd;
 
 	if (!MakePipes() || !MakeProcess())
 		return false;
 
-	ReadFileEx(m_io, m_readStdinBuf, 4096, &m_readStdinOverlapped, &jlsProcess::OnReadStdin);
-	ReadFileEx(m_err, m_readStderrBuf, 4096, &m_readStderrOverlapped, &jlsProcess::OnReadStderr);
+	ReadFileEx(
+		m_handles[IO],
+		m_readStdoutBuf,
+		4096,
+		&m_readStdoutOverlapped,
+		&jlsProcess::OnReadStdout);
 
-	// TODO(joare): Implement callbacks and call read again from them
-	//              with 'this' pointer attached to a derived OVERLAPPED
-	//              struct.
-	//              Also implement non-static callbacks and call them
-	//              via 'this'.
+	ReadFileEx(
+		m_handles[ERR],
+		m_readStderrBuf,
+		4096,
+		&m_readStderrOverlapped,
+		&jlsProcess::OnReadStderr);
 
 	return true;
 }
 
-void jlsProcess::Write() {}
+DWORD jlsProcess::Write(LPVOID lpBuffer, DWORD nBytes) {
+	DWORD nBytesWritten = 0;
+	WriteFile(m_handles[IO], lpBuffer, nBytes, &nBytesWritten, NULL);
+	return nBytesWritten;
+}
 
-VOID WINAPI jlsProcess::OnReadStdin(
+DWORD jlsProcess::WaitForObjectsOrMsg()
+{
+	return MsgWaitForMultipleObjectsEx(
+		2,
+		m_handles,
+		FALSE,
+		QS_ALLEVENTS,
+		MWMO_ALERTABLE);
+}
+
+VOID WINAPI jlsProcess::OnReadStdout(
 	DWORD dwError,
 	DWORD dwNBytes,
 	LPOVERLAPPED lpOverlapped)
 {
-
+	jlsProcess *process = static_cast<jlsIO*>(lpOverlapped)->process;
+	process->OnReadStdout(dwNBytes);
 }
 
 VOID WINAPI jlsProcess::OnReadStderr(
@@ -54,15 +87,40 @@ VOID WINAPI jlsProcess::OnReadStderr(
 	DWORD dwNBytes,
 	LPOVERLAPPED lpOverlapped)
 {
+	jlsProcess *process = static_cast<jlsIO*>(lpOverlapped)->process;
+	process->OnReadStderr(dwNBytes);
+}
 
+void jlsProcess::OnReadStdout(DWORD nBytes)
+{
+	if (nullptr != m_cb_out)
+		m_cb_out(m_readStdoutBuf, nBytes, m_receiver);
+
+	ReadFileEx(
+		m_handles[IO],
+		m_readStdoutBuf,
+		4096,
+		&m_readStdoutOverlapped,
+		&jlsProcess::OnReadStdout);
+}
+
+void jlsProcess::OnReadStderr(DWORD nBytes)
+{
+	if (nullptr != m_cb_err)
+		m_cb_out(m_readStderrBuf, nBytes, m_receiver);
+
+	ReadFileEx(
+		m_handles[ERR],
+		m_readStderrBuf,
+		4096,
+		&m_readStderrOverlapped,
+		&jlsProcess::OnReadStderr);
 }
 
 bool jlsProcess::MakePipes()
 {
 	static ULONG pipeSerial = 0;
 
-	// Buffer size from msdn:
-	// https://msdn.microsoft.com/en-us/library/windows/desktop/aa365150(v=vs.85).aspx
 	TCHAR pipeNameBuf[PIPE_NAME_MAX];
 	StringCbPrintf(
 		pipeNameBuf,
@@ -71,18 +129,20 @@ bool jlsProcess::MakePipes()
 		GetCurrentProcessId(),
 		InterlockedIncrement(&pipeSerial));
 
-	m_io = CreateNamedPipe(
+	m_handles[IO] = CreateNamedPipe(
 		pipeNameBuf,
-		PIPE_ACCESS_DUPLEX,
-		FILE_FLAG_OVERLAPPED,
+		PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
+		PIPE_TYPE_BYTE,
 		1,
 		4096,
 		4096,
 		5000,
 		NULL);
 
-	if (INVALID_HANDLE_VALUE == m_io)
+	if (INVALID_HANDLE_VALUE == m_handles[IO]) {
+		wxLogMessage("CreateNamedPipe error: %d", GetLastError());
 		return false;
+	}
 
 	SECURITY_ATTRIBUTES securityAttribs;
 	ZeroMemory(&securityAttribs, sizeof(securityAttribs));
@@ -98,7 +158,8 @@ bool jlsProcess::MakePipes()
 		NULL);
 
 	if (INVALID_HANDLE_VALUE == m_remote_io) {
-		TerminateHandle(&m_io);
+		TerminateHandle(&m_handles[IO]);
+		wxLogMessage("CreateFile error: %d", GetLastError());
 		return false;
 	}
 
@@ -109,19 +170,20 @@ bool jlsProcess::MakePipes()
 		GetCurrentProcessId(),
 		InterlockedIncrement(&pipeSerial));
 
-	m_err = CreateNamedPipe(
+	m_handles[ERR] = CreateNamedPipe(
 		pipeNameBuf,
-		PIPE_ACCESS_INBOUND,
-		FILE_FLAG_OVERLAPPED,
+		PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED,
+		PIPE_TYPE_BYTE,
 		1,
 		4096,
 		4096,
 		5000,
 		NULL);
 
-	if (INVALID_HANDLE_VALUE == m_err) {
-		TerminateHandle(&m_io);
+	if (INVALID_HANDLE_VALUE == m_handles[ERR]) {
+		TerminateHandle(&m_handles[IO]);
 		TerminateHandle(&m_remote_io);
+		wxLogMessage("CreateNamedPipe error: %d", GetLastError());
 		return false;
 	}
 
@@ -135,9 +197,10 @@ bool jlsProcess::MakePipes()
 		NULL);
 
 	if (INVALID_HANDLE_VALUE == m_remote_err) {
-		TerminateHandle(&m_io);
+		TerminateHandle(&m_handles[IO]);
 		TerminateHandle(&m_remote_io);
-		TerminateHandle(&m_err);
+		TerminateHandle(&m_handles[ERR]);
+		wxLogMessage("CreateFile error: %d", GetLastError());
 		return false;
 	}
 

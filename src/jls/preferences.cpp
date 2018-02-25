@@ -40,8 +40,8 @@ void jlsPreferences::OnStartJulia(wxCommandEvent &event)
 	if (wxFileExists(p->m_juliaPath))
 		p->m_console->Execute(p->m_juliaPath);
 
-	if (p->m_console->IsRunning())
-		wxMessageBox("Julia is running!");
-	else
-		wxMessageBox("Julia failed to run (check path)!");
+	//if (p->m_console->IsRunning())
+	//	wxMessageBox("Julia is running!");
+	//else
+	//	wxMessageBox("Julia failed to run (check path)!");
 }

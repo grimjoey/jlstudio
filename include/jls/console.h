@@ -5,27 +5,29 @@
 #include <wx/process.h>
 #include <wx/timer.h>
 
+#include "jls/process.h"
+
 class jlsConsole : public wxTextCtrl
 {
 public:
 	jlsConsole(wxWindow *parent);
 	~jlsConsole();
 
-	bool CanExecute() const;
-	bool IsRunning() const;
 	void Execute(const wxString &command);
 
-private:
-	wxProcess *m_process = nullptr;
-	long m_pid = 0;
-	bool m_running = false;
-	wxTimer m_pollProcessOutputTimer;
-	int m_pollCounter = 0;
+	// Note(joare): Not sure if i can pass these as callbacks.
+	static void OnReadStdout(void *buffer, size_t n, void *receiver);
+	static void OnReadStderr(void *buffer, size_t n, void *receiver);
 
-	void OnTimer(wxTimerEvent &event);
-	void OnEndProcess(wxProcessEvent &event);
+	void OnReadStdout(void *buffer, size_t n);
+	void OnReadStderr(void *buffer, size_t n);
+
+private:
+	jlsProcess *m_process;
+
 	void OnKeyDown(wxKeyEvent &event);
 	void OnTextEnter(wxCommandEvent &event);
+	void OnIdle(wxIdleEvent &event);
 	wxDECLARE_EVENT_TABLE();
 };
 
