@@ -8,7 +8,7 @@
 #include "jls/process.h"
 
 jlsProcess::jlsProcess(jlsProcessCb out, jlsProcessCb err, void *receiver)
-	: m_cb_out(out), m_cb_err(err),
+	: m_cb_out(out), m_cb_err(err), m_receiver(receiver),
 	m_remote_io(INVALID_HANDLE_VALUE),
 	m_remote_err(INVALID_HANDLE_VALUE),
 	m_handles{INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE}
@@ -60,6 +60,7 @@ bool jlsProcess::Execute(TCHAR *cmd)
 DWORD jlsProcess::Write(LPVOID lpBuffer, DWORD nBytes) {
 	DWORD nBytesWritten = 0;
 	WriteFile(m_handles[IO], lpBuffer, nBytes, &nBytesWritten, NULL);
+	FlushFileBuffers(m_handles[IO]);
 	return nBytesWritten;
 }
 

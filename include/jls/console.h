@@ -24,8 +24,10 @@ public:
 
 private:
 	jlsProcess *m_process;
+	wxString m_cmdBuffer;
 
 	void OnKeyDown(wxKeyEvent &event);
+	void OnChar(wxKeyEvent &event);
 	void OnTextEnter(wxCommandEvent &event);
 	void OnIdle(wxIdleEvent &event);
 	wxDECLARE_EVENT_TABLE();

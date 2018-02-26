@@ -3,14 +3,13 @@
 #include <wx/wx.h>
 #endif // WX_PRECOMP
 
-#include <wx/txtstrm.h>
-
 #include "jls/defs.h"
 #include "jls/console.h"
 #include "jls/process.h"
 
 wxBEGIN_EVENT_TABLE(jlsConsole, wxTextCtrl)
 	EVT_KEY_DOWN(jlsConsole::OnKeyDown)
+	EVT_CHAR(jlsConsole::OnChar)
 	EVT_TEXT_ENTER(jlsID_CONSOLE, jlsConsole::OnTextEnter)
 	EVT_IDLE(jlsConsole::OnIdle)
 wxEND_EVENT_TABLE()
@@ -52,13 +51,13 @@ void jlsConsole::OnReadStderr(void *buffer, size_t n, void *receiver) {
 void jlsConsole::OnReadStdout(void *buffer, size_t n) {
 	char *buf = (char*)buffer;
 	wxString s(buf, buf + n);
-	wxLogMessage(wxString("out: ") << s);
+	AppendText(s);
 }
 
 void jlsConsole::OnReadStderr(void *buffer, size_t n) {
 	char *buf = (char*)buffer;
 	wxString s(buf, buf + n);
-	wxLogMessage(wxString("err: ") << s);
+	AppendText(s);
 }
 
 void jlsConsole::OnKeyDown(wxKeyEvent &event)
@@ -76,9 +75,22 @@ void jlsConsole::OnKeyDown(wxKeyEvent &event)
 	}
 }
 
+void jlsConsole::OnChar(wxKeyEvent &event)
+{
+	wxChar c = event.GetUnicodeKey();
+	
+	m_cmdBuffer << c;
+
+	if (c == '\r')
+		m_cmdBuffer << '\n';
+	
+	event.Skip();
+}
 
 void jlsConsole::OnTextEnter(wxCommandEvent &event)
 {
+	m_process->Write(&m_cmdBuffer.data(), m_cmdBuffer.length());
+	m_cmdBuffer.clear();
 }
 
 void jlsConsole::OnIdle(wxIdleEvent &event)
