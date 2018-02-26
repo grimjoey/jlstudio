@@ -78,18 +78,18 @@ void jlsConsole::OnKeyDown(wxKeyEvent &event)
 void jlsConsole::OnChar(wxKeyEvent &event)
 {
 	wxChar c = event.GetUnicodeKey();
-	
 	m_cmdBuffer << c;
 
 	if (c == '\r')
 		m_cmdBuffer << '\n';
-	
+
 	event.Skip();
 }
 
 void jlsConsole::OnTextEnter(wxCommandEvent &event)
 {
-	m_process->Write(&m_cmdBuffer.data(), m_cmdBuffer.length());
+	wxScopedCharBuffer buf(m_cmdBuffer.ToAscii());
+	m_process->Write(buf.data(), buf.length());
 	m_cmdBuffer.clear();
 }
 

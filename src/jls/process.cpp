@@ -59,8 +59,12 @@ bool jlsProcess::Execute(TCHAR *cmd)
 
 DWORD jlsProcess::Write(LPVOID lpBuffer, DWORD nBytes) {
 	DWORD nBytesWritten = 0;
-	WriteFile(m_handles[IO], lpBuffer, nBytes, &nBytesWritten, NULL);
+	bool wf = WriteFile(m_handles[IO], lpBuffer, nBytes, &nBytesWritten, NULL);
 	FlushFileBuffers(m_handles[IO]);
+
+	//wxLogMessage("result: %d\nlast error: %d\nrequested: %d\nwritten: %d",
+	//	wf, GetLastError(), nBytes, nBytesWritten);
+
 	return nBytesWritten;
 }
 
@@ -69,8 +73,8 @@ DWORD jlsProcess::WaitForObjectsOrMsg()
 	return MsgWaitForMultipleObjectsEx(
 		2,
 		m_handles,
-		FALSE,
-		QS_ALLEVENTS,
+		INFINITE,
+		QS_ALLINPUT,
 		MWMO_ALERTABLE);
 }
 
