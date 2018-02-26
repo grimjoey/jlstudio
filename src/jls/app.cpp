@@ -14,3 +14,15 @@ bool jlsApp::OnInit()
 	frame->Show(true);
 	return true;
 }
+
+/*
+* TODO
+*
+* - Hide window after process spawn.
+* - Figure out why julia behaves differently (stderr?).
+* - Configuration and settings (+storage).
+* - Think about plotting.
+* - Look through jlsProcess and clean it up a bit.
+*
+* - Implement async process i/o for linux and macOS?
+*/

@@ -219,7 +219,8 @@ bool jlsProcess::MakeProcess()
 	ZeroMemory(&m_procInfo, sizeof(m_procInfo));
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
-	si.dwFlags = STARTF_USESTDHANDLES;
+	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+	si.wShowWindow = SW_HIDE;
 	si.hStdInput = m_remote_io;
 	si.hStdOutput = m_remote_io;
 	si.hStdError = m_remote_err;
