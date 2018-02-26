@@ -25,12 +25,19 @@ jlsProcess::jlsProcess(jlsProcessCb out, jlsProcessCb err, void *receiver)
 jlsProcess::~jlsProcess() {
 	// TODO(joare): Test and review.
 
-	TerminateHandle(&m_remote_io);
-	TerminateHandle(&m_remote_err);
+	if (INVALID_HANDLE_VALUE != m_handles[IO])
+		CancelIo(m_handles[IO]);
+
+	if (INVALID_HANDLE_VALUE != m_handles[ERR])
+		CancelIo(m_handles[ERR]);
+
 	TerminateHandle(&m_handles[IO]);
 	TerminateHandle(&m_handles[ERR]);
 
 	TerminateProcess(m_procInfo.hProcess, 1);
+
+	TerminateHandle(&m_remote_io);
+	TerminateHandle(&m_remote_err);
 }
 
 bool jlsProcess::Execute(TCHAR *cmd)
@@ -60,6 +67,8 @@ bool jlsProcess::Execute(TCHAR *cmd)
 DWORD jlsProcess::Write(LPVOID lpBuffer, DWORD nBytes) {
 	DWORD nBytesWritten = 0;
 	bool wf = WriteFile(m_handles[IO], lpBuffer, nBytes, &nBytesWritten, NULL);
+	
+	// TODO(joare): Might not need this.
 	FlushFileBuffers(m_handles[IO]);
 
 	//wxLogMessage("result: %d\nlast error: %d\nrequested: %d\nwritten: %d",
@@ -68,7 +77,7 @@ DWORD jlsProcess::Write(LPVOID lpBuffer, DWORD nBytes) {
 	return nBytesWritten;
 }
 
-DWORD jlsProcess::WaitForObjectsOrMsg()
+DWORD jlsProcess::HighjackEventLoop()
 {
 	return MsgWaitForMultipleObjectsEx(
 		2,

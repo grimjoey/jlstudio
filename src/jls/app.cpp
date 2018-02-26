@@ -18,7 +18,7 @@ bool jlsApp::OnInit()
 /*
 * TODO
 *
-* - Hide window after process spawn.
+* - Remove extra echo from process interaction.
 * - Figure out why julia behaves differently (stderr?).
 * - Configuration and settings (+storage).
 * - Think about plotting.

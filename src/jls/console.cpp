@@ -20,7 +20,9 @@ jlsConsole::jlsConsole(wxWindow *parent)
 {
 	m_process = new jlsProcess(&jlsConsole::OnReadStdout, &jlsConsole::OnReadStderr, (void*)this);
 	
-	TCHAR path[] = L"C:\\Windows\\System32\\cmd.exe";
+	//TCHAR path[] = _T("C:\\Windows\\System32\\cmd.exe");
+	TCHAR path[] = _T("C:\\Python27\\python.exe");
+
 	m_process->Execute(path);
 
 	wxFont font(wxFontInfo(10).Family(wxFONTFAMILY_MODERN));
@@ -78,10 +80,16 @@ void jlsConsole::OnKeyDown(wxKeyEvent &event)
 void jlsConsole::OnChar(wxKeyEvent &event)
 {
 	wxChar c = event.GetUnicodeKey();
-	m_cmdBuffer << c;
 
-	if (c == '\r')
-		m_cmdBuffer << '\n';
+	if (c == WXK_BACK) {
+		m_cmdBuffer.RemoveLast(1);
+	}
+	else {
+		if (c == '\r')
+			m_cmdBuffer << '\n';
+		else
+			m_cmdBuffer << c;
+	}
 
 	event.Skip();
 }
@@ -95,5 +103,5 @@ void jlsConsole::OnTextEnter(wxCommandEvent &event)
 
 void jlsConsole::OnIdle(wxIdleEvent &event)
 {
-	m_process->WaitForObjectsOrMsg();
+	m_process->HighjackEventLoop();
 }

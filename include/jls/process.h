@@ -37,7 +37,7 @@ public:
 	// ready to recieve async i/o notifications.
 	// It will cancel when another event is waiting in the
 	// message queue.
-	DWORD WaitForObjectsOrMsg();
+	DWORD HighjackEventLoop();
 
 	// Static callback for stdout (calls non-static equivalent)
 	static VOID WINAPI OnReadStdout(DWORD dwError, DWORD dwNBytes, LPOVERLAPPED lpOverlapped);
