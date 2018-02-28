@@ -1,11 +1,16 @@
 #ifndef _JLSCONSOLE_H_
 #define _JLSCONSOLE_H_
 
+#include <memory>
+
 #include <wx/textctrl.h>
 #include <wx/process.h>
 #include <wx/timer.h>
 
 #include "jls/process.h"
+#include "jls/consoleproc.h"
+
+using namespace std;
 
 class jlsConsole : public wxTextCtrl
 {
@@ -23,8 +28,12 @@ public:
 	void OnReadStderr(void *buffer, size_t n);
 
 private:
-	jlsProcess *m_process;
+	unique_ptr<jlsProcess> m_process;
 	wxString m_cmdBuffer;
+
+	unique_ptr<jlsConsoleProc> m_conProc;
+
+	void SpawnProcess();
 
 	void OnKeyDown(wxKeyEvent &event);
 	void OnChar(wxKeyEvent &event);

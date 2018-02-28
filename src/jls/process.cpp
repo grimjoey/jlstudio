@@ -79,12 +79,16 @@ DWORD jlsProcess::Write(LPVOID lpBuffer, DWORD nBytes) {
 
 DWORD jlsProcess::HighjackEventLoop()
 {
-	return MsgWaitForMultipleObjectsEx(
-		2,
-		m_handles,
-		INFINITE,
-		QS_ALLINPUT,
-		MWMO_ALERTABLE);
+	if (	   INVALID_HANDLE_VALUE != m_handles[IO]
+			&& INVALID_HANDLE_VALUE != m_handles[ERR])
+		return MsgWaitForMultipleObjectsEx(
+			2,
+			m_handles,
+			INFINITE,
+			QS_ALLINPUT,
+			MWMO_ALERTABLE);
+	else
+		return WAIT_FAILED;
 }
 
 VOID WINAPI jlsProcess::OnReadStdout(
